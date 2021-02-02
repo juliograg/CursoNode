@@ -1,35 +1,35 @@
-const db = require("mongoose");
 const Model = require("./model");
 
-const dbUser = "db_user_telegram";
-const password = "n4etCMLKCoc2pVjR";
-const dbName = "telegram";
-const URL = `mongodb+srv://${dbUser}:${password}@cluster0.vgrmt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-
-db.Promise = global.Promise;
-db.connect(URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  dbName: "telegram",
-})
-  .then(() => console.log("[db] Connect Success"))
-  .catch((err) => console.log(`[db] ${err}`));
-
 function addMessage(message) {
-  // list.push(message);
+  console.log(message);
   const myMessage = new Model(message);
   myMessage.save();
 }
 
-async function getMessage() {
-  // console.log(list);
-  const messages = await Model.find();
+async function getMessage(filterUser) {
+  let filter = {};
+  if (filterUser !== null) {
+    filter = { user: filterUser };
+  }
+  const messages = await Model.find(filter);
   return messages;
+}
+
+async function updateText(id, message) {
+  const foundMessage = await Model.findOne({ _id: id });
+  foundMessage.message = message;
+  const newMessage = await foundMessage.save();
+  return newMessage;
+}
+
+function removeMessage(id) {
+  return Model.deleteOne({ _id: id });
 }
 
 module.exports = {
   add: addMessage,
   list: getMessage,
-  //get
+  updateText,
+  remove: removeMessage,
   //delete
 };

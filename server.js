@@ -1,8 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const db = require("./db");
+console.log(db);
+db.connect(db.URL);
 
-// const router = require("./components/message/network");
-// const router = require("./components/message/network");
 const router = require("./network/routes");
 
 const app = express();
