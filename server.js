@@ -1,19 +1,24 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const db = require("./db");
-console.log(db);
-db.connect(db.URL);
+const app = express();
+const server = require("http").Server(app);
 
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const socket = require("./socket");
+const db = require("./db");
 const router = require("./network/routes");
 
-const app = express();
+db.connect(db.URL);
+
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+socket.connect(server);
 router(app);
-// router(app);
 
 app.use("/App", express.static("public"));
 
-app.listen(3000, () => {
+server.listen(3000, function () {
   console.log("la aplicacion esta escuchando en http://localhost:3000");
 });

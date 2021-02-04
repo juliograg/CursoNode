@@ -1,18 +1,27 @@
 const Model = require("./model");
 
 function addMessage(message) {
-  console.log(message);
   const myMessage = new Model(message);
   myMessage.save();
 }
 
-async function getMessage(filterUser) {
-  let filter = {};
-  if (filterUser !== null) {
-    filter = { user: filterUser };
-  }
-  const messages = await Model.find(filter);
-  return messages;
+async function getMessages(filterChat) {
+  return new Promise((resolve, reject) => {
+    let filter = {};
+    if (filterChat !== null) {
+      filter = { chat: filterChat };
+    }
+    Model.find(filter)
+      .populate("user")
+      .exec((error, populated) => {
+        if (error) {
+          reject(error);
+          return false;
+        }
+
+        resolve(populated);
+      });
+  });
 }
 
 async function updateText(id, message) {
@@ -28,8 +37,7 @@ function removeMessage(id) {
 
 module.exports = {
   add: addMessage,
-  list: getMessage,
+  list: getMessages,
   updateText,
   remove: removeMessage,
-  //delete
 };
